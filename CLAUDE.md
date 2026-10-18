@@ -62,7 +62,7 @@ drizzle/, drizzle.config.ts, .env.local
 - **인증**: 모든 페이지와 API는 Clerk로 로그인 후에만 접근 가능. 미로그인 페이지 접근은 로그인 화면으로 이동, 미로그인 API 호출은 401. 모든 데이터는 `user_id` 기준으로 분리한다.
 - **데이터 모델**
   - `categories(id, user_id, name)`
-  - `articles(id, user_id, url[사용자별 고유], source, original_title, title_ko, summary_ko, category_id[null = 미분류], published_at, notion_page_id[null 허용], created_at)`
+  - `articles(id, user_id, url[사용자별 고유], source, original_title, author[null 허용], title_ko, summary_ko, category_id[null = 미분류], published_at, notion_page_id[null 허용], created_at)`
 
 ## 기능별 규칙
 

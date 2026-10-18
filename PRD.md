@@ -81,7 +81,7 @@
 
 ## 7. 데이터 모델
 - **categories**: id, user_id, name
-- **articles**: id, user_id, url(사용자별 고유), source, original_title, title_ko, summary_ko, category_id(null 허용 = 미분류), published_at, notion_page_id(null 허용), created_at
+- **articles**: id, user_id, url(사용자별 고유), source, original_title, author(null 허용), title_ko, summary_ko, category_id(null 허용 = 미분류), published_at, notion_page_id(null 허용), created_at
 
 ## 8. 디렉토리 구조 (제안)
 ```
