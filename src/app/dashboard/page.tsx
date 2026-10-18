@@ -3,8 +3,12 @@ import { UserButton } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import CategoryFilter from "@/components/CategoryFilter";
+import FetchNewsButton from "@/components/FetchNewsButton";
 import NewsCard from "@/components/NewsCard";
+import Pagination from "@/components/Pagination";
 import {
+  PAGE_SIZE,
+  countArticles,
   listArticles,
   listCategories,
   type CategoryFilterValue,
@@ -20,7 +24,10 @@ export default function DashboardPage({ searchParams }: PageProps<"/dashboard">)
           <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
             AI 뉴스 수집기
           </h1>
-          <UserButton />
+          <div className="flex items-center gap-3">
+            <FetchNewsButton />
+            <UserButton />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
@@ -51,7 +58,15 @@ async function DashboardContent({
       : (categoryList.find((c) => String(c.id) === param)?.id ?? "all");
   const selected = filter === "all" ? "all" : String(filter);
 
-  const items = await listArticles(userId, filter);
+  const total = await countArticles(userId, filter);
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  // 잘못된 값이나 범위를 벗어난 값(예: 기사가 줄어든 뒤의 옛 링크)은 가장 가까운 페이지로 맞춘다.
+  const rawPage = Number((await searchParams).page);
+  const page = Number.isInteger(rawPage)
+    ? Math.min(Math.max(rawPage, 1), totalPages)
+    : 1;
+
+  const items = await listArticles(userId, filter, page);
 
   return (
     <>
@@ -78,6 +93,7 @@ async function DashboardContent({
           ))}
         </div>
       )}
+      <Pagination page={page} totalPages={totalPages} category={selected} />
     </>
   );
 }
