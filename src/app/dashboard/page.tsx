@@ -10,7 +10,7 @@ import {
   PAGE_SIZE,
   countArticles,
   listArticles,
-  listCategories,
+  listCategoriesWithDefaults,
   type CategoryFilterValue,
 } from "@/db/queries";
 
@@ -50,7 +50,7 @@ async function DashboardContent({
   const raw = (await searchParams).category;
   const param = typeof raw === "string" ? raw : "all";
 
-  const categoryList = await listCategories(userId);
+  const categoryList = await listCategoriesWithDefaults(userId);
   // 목록에 없는 값(남의 id, 오타 등)은 전체로 취급한다.
   const filter: CategoryFilterValue =
     param === "uncategorized"

@@ -8,6 +8,7 @@ type Notice = { kind: "success" | "warning" | "error"; text: string };
 type FetchResponse = {
   added?: number;
   skipped?: number;
+  failedCount?: number;
   failedSources?: string[];
   error?: string;
 };
@@ -45,17 +46,21 @@ export default function FetchNewsButton() {
 
       const added = data.added ?? 0;
       const failed = data.failedSources ?? [];
-      const base =
+      const failedCount = data.failedCount ?? 0;
+      let base =
         added > 0
           ? `새 기사 ${added}개를 가져왔어요.`
           : "새로 가져올 기사가 없어요.";
+      if (failedCount > 0) {
+        base += ` ${failedCount}개는 번역·요약에 실패해 다음에 다시 시도해요.`;
+      }
       setNotice(
         failed.length > 0
           ? {
               kind: "warning",
               text: `${failed.join(", ")}에서 가져오지 못했어요. 나머지는 정상 처리했어요. ${base}`,
             }
-          : { kind: "success", text: base },
+          : { kind: failedCount > 0 ? "warning" : "success", text: base },
       );
       startRefresh(() => router.refresh());
     } catch {
