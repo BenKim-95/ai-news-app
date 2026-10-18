@@ -82,6 +82,7 @@ async function DashboardContent({
           {items.map((a) => (
             <NewsCard
               key={a.id}
+              id={a.id}
               title={a.titleKo}
               summary={a.summaryKo}
               categoryName={a.categoryName}
