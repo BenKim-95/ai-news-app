@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, isNull } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, isNull } from "drizzle-orm";
 import { db } from "./index";
 import { articles, categories, type NewArticle } from "./schema";
 
@@ -13,6 +13,27 @@ export function listCategories(userId: string) {
     .from(categories)
     .where(eq(categories.userId, userId))
     .orderBy(asc(categories.id));
+}
+
+export const DEFAULT_CATEGORIES = [
+  "모델·연구",
+  "제품·서비스",
+  "투자·비즈니스",
+  "규제·정책",
+  "기타",
+];
+
+// 카테고리가 하나도 없는 사용자(첫 접속)에게 기본 카테고리를 넣고 목록을 돌려준다.
+export async function listCategoriesWithDefaults(userId: string) {
+  const existing = await listCategories(userId);
+  if (existing.length > 0) return existing;
+
+  // 동시 요청이 겹쳐도 (user_id, name) 유니크 제약으로 중복되지 않는다.
+  await db
+    .insert(categories)
+    .values(DEFAULT_CATEGORIES.map((name) => ({ userId, name })))
+    .onConflictDoNothing({ target: [categories.userId, categories.name] });
+  return listCategories(userId);
 }
 
 function articleWhere(userId: string, filter: CategoryFilterValue) {
@@ -61,6 +82,16 @@ export function listArticles(
     .orderBy(desc(articles.publishedAt), desc(articles.id))
     .limit(PAGE_SIZE)
     .offset((page - 1) * PAGE_SIZE);
+}
+
+// 이미 저장된 기사 URL만 골라낸다. Claude에 중복 기사를 보내지 않기 위해 쓴다.
+export async function findExistingUrls(userId: string, urls: string[]) {
+  if (urls.length === 0) return new Set<string>();
+  const rows = await db
+    .select({ url: articles.url })
+    .from(articles)
+    .where(and(eq(articles.userId, userId), inArray(articles.url, urls)));
+  return new Set(rows.map((r) => r.url));
 }
 
 // (user_id, url) 유니크 제약으로 이미 가져온 기사는 건너뛰고, 실제로 추가된 개수를 돌려준다.

@@ -84,10 +84,9 @@ async function fetchFeed(feed: FeedSource): Promise<FeedItem[]> {
   return items;
 }
 
-// 두 피드를 병렬로 가져와 최근 `hours`시간 이내 기사만 남긴다.
+// 두 피드를 병렬로 가져와 피드마다 최신 `perFeed`개만 남긴다.
 // 한 피드가 실패해도 나머지는 계속 처리하고, 실패한 소스 이름을 돌려준다.
-export async function fetchRecentArticles(hours = 24): Promise<FetchResult> {
-  const since = Date.now() - hours * 60 * 60 * 1000;
+export async function fetchLatestArticles(perFeed = 5): Promise<FetchResult> {
   const results = await Promise.allSettled(FEEDS.map(fetchFeed));
 
   const items: FeedItem[] = [];
@@ -99,8 +98,11 @@ export async function fetchRecentArticles(hours = 24): Promise<FetchResult> {
       failedSources.push(FEEDS[i].name);
       return;
     }
-    for (const item of result.value) {
-      if (item.publishedAt.getTime() < since) continue;
+    // 피드 순서에 기대지 않고 발행 시각 기준 최신 기사부터 고른다.
+    const latest = [...result.value]
+      .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime())
+      .slice(0, perFeed);
+    for (const item of latest) {
       // 피드 사이에서도 URL이 같으면 한 번만 담는다.
       if (seen.has(item.url)) continue;
       seen.add(item.url);
