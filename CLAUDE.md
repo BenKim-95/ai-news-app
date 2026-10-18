@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 해외 AI 뉴스를 RSS로 수집하고, Claude가 한국어로 번역·요약·카테고리 분류한 결과를 카드로 보여주는 개인용 웹앱. 마음에 드는 뉴스는 Notion에 저장한다. 요구사항의 기준 문서는 `PRD.md`이며, 이 파일은 그 핵심을 요약한 것이다. 둘이 어긋나면 `PRD.md`를 따르고 이 파일을 갱신한다.
 
+## UI 가이드
+
+화면 구성, 컴포넌트, Tailwind 스타일 규칙은 `ui.md`를 따른다. UI 코드를 쓰기 전에 먼저 읽는다. 기능 요구사항은 `PRD.md`가 우선이다.
+
 ## 현재 상태
 
 `create-next-app` 스캐폴드와 PRD 스택의 의존성만 설치돼 있고, 앱 코드는 아직 작성하지 않았다.
