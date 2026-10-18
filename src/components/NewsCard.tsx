@@ -1,3 +1,5 @@
+import SaveNewsButton from "./SaveNewsButton";
+
 const dateFormat = new Intl.DateTimeFormat("ko-KR", {
   timeZone: "Asia/Seoul",
   year: "numeric",
@@ -11,6 +13,7 @@ function formatDate(date: Date) {
 }
 
 export type NewsCardProps = {
+  id: number;
   title: string;
   summary: string;
   categoryName: string | null;
@@ -21,6 +24,7 @@ export type NewsCardProps = {
 };
 
 export default function NewsCard({
+  id,
   title,
   summary,
   categoryName,
@@ -63,18 +67,7 @@ export default function NewsCard({
             원문 보기 ↗
           </a>
         </div>
-        {/* 저장 기능(Notion 연동)은 이후 단계에서 연결한다. */}
-        <button
-          type="button"
-          disabled
-          className={
-            saved
-              ? "mt-3 w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950"
-              : "mt-3 w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 opacity-50 dark:border-slate-700 dark:text-slate-200"
-          }
-        >
-          {saved ? "저장됨" : "Notion 저장"}
-        </button>
+        <SaveNewsButton id={id} saved={saved} />
       </div>
     </article>
   );

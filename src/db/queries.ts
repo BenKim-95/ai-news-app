@@ -104,3 +104,41 @@ export async function insertNewArticles(rows: NewArticle[]) {
     .returning({ id: articles.id });
   return inserted.length;
 }
+
+export async function getArticleForNotion(userId: string, id: number) {
+  const [row] = await db
+    .select({
+      id: articles.id,
+      url: articles.url,
+      source: articles.source,
+      titleKo: articles.titleKo,
+      summaryKo: articles.summaryKo,
+      publishedAt: articles.publishedAt,
+      notionPageId: articles.notionPageId,
+      categoryName: categories.name,
+    })
+    .from(articles)
+    .leftJoin(categories, eq(articles.categoryId, categories.id))
+    .where(and(eq(articles.userId, userId), eq(articles.id, id)));
+  return row;
+}
+
+// 아직 저장되지 않은 기사에만 page id를 기록한다. 이미 기록돼 있으면 false.
+export async function setNotionPageId(
+  userId: string,
+  id: number,
+  notionPageId: string,
+) {
+  const updated = await db
+    .update(articles)
+    .set({ notionPageId })
+    .where(
+      and(
+        eq(articles.userId, userId),
+        eq(articles.id, id),
+        isNull(articles.notionPageId),
+      ),
+    )
+    .returning({ id: articles.id });
+  return updated.length > 0;
+}
