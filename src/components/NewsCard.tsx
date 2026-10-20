@@ -1,3 +1,4 @@
+import { categoryColor } from "./categoryColors";
 import SaveNewsButton from "./SaveNewsButton";
 
 const dateFormat = new Intl.DateTimeFormat("ko-KR", {
@@ -16,6 +17,7 @@ export type NewsCardProps = {
   id: number;
   title: string;
   summary: string;
+  categoryId: number | null;
   categoryName: string | null;
   source: string;
   publishedAt: Date;
@@ -27,6 +29,7 @@ export default function NewsCard({
   id,
   title,
   summary,
+  categoryId,
   categoryName,
   source,
   publishedAt,
@@ -36,11 +39,7 @@ export default function NewsCard({
   return (
     <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
       <span
-        className={
-          categoryName
-            ? "mb-3 w-fit rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
-            : "mb-3 w-fit rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-        }
+        className={`mb-3 w-fit rounded-full px-2.5 py-0.5 text-xs font-medium ${categoryColor(categoryId).badge}`}
       >
         {categoryName ?? "미분류"}
       </span>

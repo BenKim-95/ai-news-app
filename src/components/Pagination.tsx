@@ -5,13 +5,15 @@ type Props = {
   totalPages: number;
   // "all" | "uncategorized" | 카테고리 id(문자열)
   category: string;
+  query: string;
 };
 
 // 현재 페이지 앞뒤로 몇 페이지씩 보여 줄지
 const SIBLINGS = 2;
 
-function pageHref(category: string, page: number) {
+function pageHref(category: string, query: string, page: number) {
   const params = new URLSearchParams();
+  if (query) params.set("q", query);
   if (category !== "all") params.set("category", category);
   if (page > 1) params.set("page", String(page));
   const qs = params.toString();
@@ -47,10 +49,12 @@ const itemDisabled =
 // 처음·이전·다음·끝 버튼. target이 null이면 비활성화한다.
 function EdgeButton({
   category,
+  query,
   target,
   children,
 }: {
   category: string;
+  query: string;
   target: number | null;
   children: React.ReactNode;
 }) {
@@ -63,7 +67,7 @@ function EdgeButton({
   }
   return (
     <Link
-      href={pageHref(category, target)}
+      href={pageHref(category, query, target)}
       className={`${itemBase} ${itemOff}`}
     >
       {children}
@@ -71,7 +75,12 @@ function EdgeButton({
   );
 }
 
-export default function Pagination({ page, totalPages, category }: Props) {
+export default function Pagination({
+  page,
+  totalPages,
+  category,
+  query,
+}: Props) {
   if (totalPages <= 1) return null;
 
   const hasPrev = page > 1;
@@ -82,10 +91,14 @@ export default function Pagination({ page, totalPages, category }: Props) {
       aria-label="페이지"
       className="mt-8 flex flex-wrap items-center justify-center gap-2"
     >
-      <EdgeButton category={category} target={hasPrev ? 1 : null}>
+      <EdgeButton category={category} query={query} target={hasPrev ? 1 : null}>
         처음
       </EdgeButton>
-      <EdgeButton category={category} target={hasPrev ? page - 1 : null}>
+      <EdgeButton
+        category={category}
+        query={query}
+        target={hasPrev ? page - 1 : null}
+      >
         이전
       </EdgeButton>
 
@@ -101,7 +114,7 @@ export default function Pagination({ page, totalPages, category }: Props) {
         ) : (
           <Link
             key={item}
-            href={pageHref(category, item)}
+            href={pageHref(category, query, item)}
             aria-current={item === page ? "page" : undefined}
             aria-label={`${item}페이지`}
             className={`${itemBase} ${item === page ? itemOn : itemOff}`}
@@ -111,10 +124,18 @@ export default function Pagination({ page, totalPages, category }: Props) {
         ),
       )}
 
-      <EdgeButton category={category} target={hasNext ? page + 1 : null}>
+      <EdgeButton
+        category={category}
+        query={query}
+        target={hasNext ? page + 1 : null}
+      >
         다음
       </EdgeButton>
-      <EdgeButton category={category} target={hasNext ? totalPages : null}>
+      <EdgeButton
+        category={category}
+        query={query}
+        target={hasNext ? totalPages : null}
+      >
         끝
       </EdgeButton>
     </nav>

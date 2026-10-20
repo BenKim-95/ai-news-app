@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import CategoryFilter from "@/components/CategoryFilter";
 import FetchNewsButton from "@/components/FetchNewsButton";
 import NewsCard from "@/components/NewsCard";
+import NewsSearch from "@/components/NewsSearch";
 import Pagination from "@/components/Pagination";
 import {
   PAGE_SIZE,
@@ -47,6 +48,9 @@ async function DashboardContent({
   const { userId } = await auth();
   if (!userId) redirect("/");
 
+  const { q: rawQ } = await searchParams;
+  const query = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 100);
+
   const raw = (await searchParams).category;
   const param = typeof raw === "string" ? raw : "all";
 
@@ -58,7 +62,7 @@ async function DashboardContent({
       : (categoryList.find((c) => String(c.id) === param)?.id ?? "all");
   const selected = filter === "all" ? "all" : String(filter);
 
-  const total = await countArticles(userId, filter);
+  const total = await countArticles(userId, filter, query);
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   // 잘못된 값이나 범위를 벗어난 값(예: 기사가 줄어든 뒤의 옛 링크)은 가장 가까운 페이지로 맞춘다.
   const rawPage = Number((await searchParams).page);
@@ -66,16 +70,25 @@ async function DashboardContent({
     ? Math.min(Math.max(rawPage, 1), totalPages)
     : 1;
 
-  const items = await listArticles(userId, filter, page);
+  const items = await listArticles(userId, filter, page, query);
 
   return (
     <>
-      <CategoryFilter categories={categoryList} selected={selected} />
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <CategoryFilter
+          categories={categoryList}
+          selected={selected}
+          query={query}
+        />
+        <NewsSearch query={query} category={selected} />
+      </div>
       {items.length === 0 ? (
         <p className="py-20 text-center text-sm text-slate-500 dark:text-slate-400">
-          {filter === "all"
-            ? "아직 수집한 뉴스가 없어요. 오른쪽 위 '뉴스 가져오기'를 눌러 보세요."
-            : "이 카테고리에는 기사가 없어요."}
+          {query
+            ? `'${query}'에 대한 검색 결과가 없어요.`
+            : filter === "all"
+              ? "아직 수집한 뉴스가 없어요. 오른쪽 위 '뉴스 가져오기'를 눌러 보세요."
+              : "이 카테고리에는 기사가 없어요."}
         </p>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -85,6 +98,7 @@ async function DashboardContent({
               id={a.id}
               title={a.titleKo}
               summary={a.summaryKo}
+              categoryId={a.categoryId}
               categoryName={a.categoryName}
               source={a.source}
               publishedAt={a.publishedAt}
@@ -94,7 +108,12 @@ async function DashboardContent({
           ))}
         </div>
       )}
-      <Pagination page={page} totalPages={totalPages} category={selected} />
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        category={selected}
+        query={query}
+      />
     </>
   );
 }

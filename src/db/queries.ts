@@ -1,4 +1,14 @@
-import { and, asc, count, desc, eq, inArray, isNull } from "drizzle-orm";
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  ilike,
+  inArray,
+  isNull,
+  or,
+} from "drizzle-orm";
 import { db } from "./index";
 import { articles, categories, type NewArticle } from "./schema";
 
@@ -36,7 +46,22 @@ export async function listCategoriesWithDefaults(userId: string) {
   return listCategories(userId);
 }
 
-function articleWhere(userId: string, filter: CategoryFilterValue) {
+// 제목·요약·원문 제목에서 키워드를 찾는다. LIKE 와일드카드는 글자 그대로 취급한다.
+function keywordWhere(keyword: string) {
+  if (!keyword) return undefined;
+  const pattern = `%${keyword.replace(/[\\%_]/g, "\\$&")}%`;
+  return or(
+    ilike(articles.titleKo, pattern),
+    ilike(articles.summaryKo, pattern),
+    ilike(articles.originalTitle, pattern),
+  );
+}
+
+function articleWhere(
+  userId: string,
+  filter: CategoryFilterValue,
+  keyword: string,
+) {
   const byCategory =
     filter === "all"
       ? undefined
@@ -44,17 +69,18 @@ function articleWhere(userId: string, filter: CategoryFilterValue) {
         ? isNull(articles.categoryId)
         : eq(articles.categoryId, filter);
 
-  return and(eq(articles.userId, userId), byCategory);
+  return and(eq(articles.userId, userId), byCategory, keywordWhere(keyword));
 }
 
 export async function countArticles(
   userId: string,
   filter: CategoryFilterValue,
+  keyword = "",
 ) {
   const [row] = await db
     .select({ total: count() })
     .from(articles)
-    .where(articleWhere(userId, filter));
+    .where(articleWhere(userId, filter, keyword));
   return row.total;
 }
 
@@ -63,6 +89,7 @@ export function listArticles(
   userId: string,
   filter: CategoryFilterValue,
   page: number,
+  keyword = "",
 ) {
   return db
     .select({
@@ -73,11 +100,12 @@ export function listArticles(
       summaryKo: articles.summaryKo,
       publishedAt: articles.publishedAt,
       notionPageId: articles.notionPageId,
+      categoryId: articles.categoryId,
       categoryName: categories.name,
     })
     .from(articles)
     .leftJoin(categories, eq(articles.categoryId, categories.id))
-    .where(articleWhere(userId, filter))
+    .where(articleWhere(userId, filter, keyword))
     // 같은 시각의 기사가 페이지 사이에서 뒤섞이지 않도록 id를 보조 정렬 키로 쓴다.
     .orderBy(desc(articles.publishedAt), desc(articles.id))
     .limit(PAGE_SIZE)

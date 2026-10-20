@@ -1,50 +1,58 @@
 import Link from "next/link";
+import { categoryColor } from "./categoryColors";
 
 type Props = {
   categories: { id: number; name: string }[];
   // "all" | "uncategorized" | 카테고리 id(문자열)
   selected: string;
+  // 검색어. 카테고리를 바꿔도 유지한다.
+  query: string;
 };
 
 const chipBase =
   "rounded-full border px-4 py-1.5 text-sm font-medium transition";
-const chipOn = "border-indigo-600 bg-indigo-600 text-white";
-const chipOff =
-  "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800";
 
 function Chip({
   value,
   selected,
+  query,
   children,
 }: {
   value: string;
   selected: string;
+  query: string;
   children: React.ReactNode;
 }) {
   const on = value === selected;
+  // "all"·"uncategorized"는 회색, 카테고리 id는 id별 색
+  const color = categoryColor(/^\d+$/.test(value) ? Number(value) : null);
+  const params = new URLSearchParams();
+  if (value !== "all") params.set("category", value);
+  if (query) params.set("q", query);
+  const qs = params.toString();
   return (
     <Link
-      href={value === "all" ? "/dashboard" : `/dashboard?category=${value}`}
+      href={qs ? `/dashboard?${qs}` : "/dashboard"}
       aria-current={on ? "true" : undefined}
-      className={`${chipBase} ${on ? chipOn : chipOff}`}
+      className={`${chipBase} ${on ? color.chipOn : color.chipOff}`}
     >
       {children}
     </Link>
   );
 }
 
-export default function CategoryFilter({ categories, selected }: Props) {
+export default function CategoryFilter({ categories, selected, query }: Props) {
   return (
-    <nav aria-label="카테고리" className="mb-6 flex flex-wrap items-center gap-2">
-      <Chip value="all" selected={selected}>
+    <nav aria-label="카테고리" className="flex flex-wrap items-center gap-2">
+      <Chip value="all" selected={selected} query={query}>
         전체
       </Chip>
       {categories.map((c) => (
-        <Chip key={c.id} value={String(c.id)} selected={selected}>
+        <Chip key={c.id} value={String(c.id)} selected={selected} query={query}>
           {c.name}
         </Chip>
       ))}
-      <Chip value="uncategorized" selected={selected}>
+      <Chip value="uncategorized" selected={selected} query={query}>
         미분류
       </Chip>
 
