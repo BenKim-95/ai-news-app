@@ -27,6 +27,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npx drizzle-kit generate` / `npx drizzle-kit migrate` — 마이그레이션 (`drizzle.config.ts`를 먼저 만들어야 하며, `dotenv`로 `.env.local`을 읽는다)
 - 테스트 러너는 설정돼 있지 않다.
 
+### 커스텀 슬래시 명령
+
+- `/news-workflow [브랜치 이름]` (`.claude/commands/news-workflow.md`) — 새 기능 개발 워크플로우. main 확인 → 새 브랜치 생성(이름이 없으면 영어 소문자-하이픈 이름 제안) → 기술 스택·컨벤션 안내 → '완료'/'done' 입력 시 변경 파일 확인, 커밋 메시지 제안, 커밋 후 main 병합 → 작업 요약.
+
 ## Next.js 버전 주의
 
 `AGENTS.md`에 따르면 이 Next.js(16.x)는 이전 버전과 호환되지 않는 변경이 있다. Next.js 코드(라우팅, 미들웨어/프록시 규칙, 비동기 요청 API 등)를 쓰기 전에 `node_modules/next/dist/docs/`의 관련 가이드를 먼저 읽는다. `@clerk/nextjs` 7.x, Zod 4, Tailwind 4도 예전 문서와 다를 수 있다.
