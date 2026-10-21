@@ -170,3 +170,16 @@ export async function setNotionPageId(
     .returning({ id: articles.id });
   return updated.length > 0;
 }
+
+export async function deleteArticle(userId: string, id: number) {
+  try {
+    const deleted = await db
+      .delete(articles)
+      .where(and(eq(articles.userId, userId), eq(articles.id, id)))
+      .returning({ id: articles.id });
+    return deleted.length > 0;
+  } catch (error) {
+    console.error("기사 삭제 실패", error);
+    throw error;
+  }
+}

@@ -1,4 +1,5 @@
 import { categoryColor } from "./categoryColors";
+import DeleteNewsButton from "./DeleteNewsButton";
 import SaveNewsButton from "./SaveNewsButton";
 
 const dateFormat = new Intl.DateTimeFormat("ko-KR", {
@@ -37,7 +38,9 @@ export default function NewsCard({
   saved,
 }: NewsCardProps) {
   return (
-    <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+    <article className="relative flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+      <DeleteNewsButton id={id} />
+
       <span
         className={`mb-3 w-fit rounded-full px-2.5 py-0.5 text-xs font-medium ${categoryColor(categoryId).badge}`}
       >
