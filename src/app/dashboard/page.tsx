@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import CategoryFilter from "@/components/CategoryFilter";
 import FetchNewsButton from "@/components/FetchNewsButton";
 import NewsCard from "@/components/NewsCard";
+import NewsCardSkeleton from "@/components/NewsCardSkeleton";
 import NewsCountBadge from "@/components/NewsCountBadge";
 import NewsSearch from "@/components/NewsSearch";
 import Pagination from "@/components/Pagination";
@@ -137,12 +138,10 @@ async function DashboardContent({
 
 function DashboardSkeleton() {
   return (
-    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-hidden>
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" role="status">
+      <span className="sr-only">뉴스를 불러오는 중</span>
       {Array.from({ length: 6 }, (_, i) => (
-        <div
-          key={i}
-          className="h-52 animate-pulse rounded-xl bg-slate-200 dark:bg-slate-800"
-        />
+        <NewsCardSkeleton key={i} />
       ))}
     </div>
   );
