@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import CategoryFilter from "@/components/CategoryFilter";
 import FetchNewsButton from "@/components/FetchNewsButton";
 import NewsCard from "@/components/NewsCard";
+import NewsCountBadge from "@/components/NewsCountBadge";
 import NewsSearch from "@/components/NewsSearch";
 import Pagination from "@/components/Pagination";
 import {
@@ -17,7 +18,9 @@ import {
 
 export const metadata = { title: "대시보드 · AI 뉴스 수집기" };
 
-export default function DashboardPage({ searchParams }: PageProps<"/dashboard">) {
+export default function DashboardPage({
+  searchParams,
+}: PageProps<"/dashboard">) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
@@ -25,19 +28,33 @@ export default function DashboardPage({ searchParams }: PageProps<"/dashboard">)
           <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
             AI 뉴스 수집기
           </h1>
-          <div className="flex items-center gap-3">
-            <FetchNewsButton />
-            <UserButton />
-          </div>
+          <UserButton />
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              AI 뉴스 대시보드
+            </h2>
+            <Suspense>
+              <TotalCountBadge />
+            </Suspense>
+          </div>
+          <FetchNewsButton />
+        </div>
         <Suspense fallback={<DashboardSkeleton />}>
           <DashboardContent searchParams={searchParams} />
         </Suspense>
       </main>
     </div>
   );
+}
+
+async function TotalCountBadge() {
+  const { userId } = await auth();
+  if (!userId) return null;
+  return <NewsCountBadge count={await countArticles(userId, "all")} />;
 }
 
 async function DashboardContent({
