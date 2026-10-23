@@ -23,7 +23,9 @@ export default function SaveNewsButton({
       const res = await fetch(`/api/news/${id}/notion`, { method: "POST" });
       const data: { error?: string } = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error ?? "저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        setError(
+          data.error ?? "저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        );
         return;
       }
       setDone(true);
@@ -40,7 +42,7 @@ export default function SaveNewsButton({
       <button
         type="button"
         disabled
-        className="mt-3 w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-medium text-emerald-600 dark:border-emerald-900 dark:bg-emerald-950"
+        className="relative z-10 mt-4 w-full rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
       >
         저장됨
       </button>
@@ -53,7 +55,7 @@ export default function SaveNewsButton({
         type="button"
         onClick={handleClick}
         disabled={saving || refreshing}
-        className="mt-3 w-full rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+        className="relative z-10 mt-4 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-500/50 dark:hover:bg-indigo-950 dark:hover:text-indigo-300"
       >
         {saving ? "저장 중…" : "뉴스 저장"}
       </button>

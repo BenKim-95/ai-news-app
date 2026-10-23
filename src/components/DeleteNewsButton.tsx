@@ -16,7 +16,9 @@ export default function DeleteNewsButton({ id }: { id: number }) {
       const res = await fetch(`/api/news/${id}`, { method: "DELETE" });
       const data: { error?: string } = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError(data.error ?? "삭제하지 못했어요. 잠시 후 다시 시도해 주세요.");
+        setError(
+          data.error ?? "삭제하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        );
         setDeleting(false);
         return;
       }
@@ -35,7 +37,7 @@ export default function DeleteNewsButton({ id }: { id: number }) {
         onClick={handleClick}
         disabled={deleting || refreshing}
         aria-label="뉴스 삭제"
-        className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+        className="absolute right-4 top-4 z-10 inline-flex size-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100 hover:text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
       >
         <svg
           viewBox="0 0 20 20"
