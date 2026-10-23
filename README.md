@@ -122,6 +122,11 @@ drizzle/                            마이그레이션
 - `ui.md`: UI·Tailwind 스타일 가이드
 - `CLAUDE.md`: Claude Code용 프로젝트 안내
 
+## 사용한 플러그인
+
+- Frontend Design: UI 디자인 품질 향상
+- commit-commands: 깃 워크플로 자동화
+
 ## 참고
 
 - Notion 저장은 서버에서 Notion MCP 서버 프로세스를 띄워 호출하므로, 배포 환경에서는 프로세스 실행이 가능한지 확인해야 합니다.
