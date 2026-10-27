@@ -8,7 +8,7 @@ export default function SignInGate() {
   const { openSignIn, loaded } = useClerk();
 
   useEffect(() => {
-    if (loaded) openSignIn();
+    if (loaded) openSignIn({ forceRedirectUrl: "/dashboard" });
   }, [loaded, openSignIn]);
 
   return (
@@ -17,7 +17,7 @@ export default function SignInGate() {
       <p className="text-zinc-600 dark:text-zinc-400">
         계속하려면 로그인해 주세요.
       </p>
-      <SignInButton mode="modal">
+      <SignInButton mode="modal" forceRedirectUrl="/dashboard">
         <button className="rounded-full bg-foreground px-5 py-2 text-background">
           로그인
         </button>
