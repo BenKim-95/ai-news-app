@@ -49,7 +49,12 @@ async function callNotionTool(
       ),
     ],
     env: { ...(process.env as Record<string, string>), NOTION_TOKEN: token },
+    stderr: "pipe",
   });
+  // 서버가 바로 종료될 때("Connection closed") 원인을 알 수 있도록 stderr를 로그에 남긴다.
+  transport.stderr?.on("data", (chunk) =>
+    console.error("Notion MCP stderr:", String(chunk).trim()),
+  );
 
   try {
     await client.connect(transport);
@@ -70,7 +75,8 @@ let dataSourceId: string | undefined;
 async function getDataSourceId() {
   if (dataSourceId) return dataSourceId;
   // 환경 변수에 URL 꼬리표("?v=...")가 붙어 있어도 32자리 ID만 뽑아 쓴다.
-  const databaseId = process.env.NOTION_DATABASE_ID?.match(/[0-9a-f]{32}/i)?.[0];
+  const databaseId =
+    process.env.NOTION_DATABASE_ID?.match(/[0-9a-f]{32}/i)?.[0];
   if (!databaseId) {
     throw new Error("NOTION_DATABASE_ID 환경 변수가 올바르지 않습니다.");
   }
@@ -78,7 +84,8 @@ async function getDataSourceId() {
     database_id: databaseId,
   });
   const id = (db.data_sources as { id: string }[] | undefined)?.[0]?.id;
-  if (!id) throw new Error("Notion 데이터베이스의 data source를 찾지 못했습니다.");
+  if (!id)
+    throw new Error("Notion 데이터베이스의 data source를 찾지 못했습니다.");
   return (dataSourceId = id);
 }
 
