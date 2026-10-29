@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import CategoryFilter from "@/components/CategoryFilter";
 import FetchNewsButton from "@/components/FetchNewsButton";
+import Footer from "@/components/Footer";
 import NewsCard from "@/components/NewsCard";
 import NewsCardSkeleton from "@/components/NewsCardSkeleton";
 import NewsCountBadge from "@/components/NewsCountBadge";
@@ -23,7 +24,7 @@ export default function DashboardPage({
   searchParams,
 }: PageProps<"/dashboard">) {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-950">
       <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
           <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
@@ -32,7 +33,7 @@ export default function DashboardPage({
           <UserButton />
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-6">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
@@ -48,6 +49,7 @@ export default function DashboardPage({
           <DashboardContent searchParams={searchParams} />
         </Suspense>
       </main>
+      <Footer />
     </div>
   );
 }
